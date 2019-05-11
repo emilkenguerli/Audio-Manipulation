@@ -12,15 +12,23 @@ using namespace std;
 namespace KNGEMI002 {
 
   template <class T> class Audio {
-    int16_t buf[44100] = {0}; // buffer
-    int n;                // buffer index
-    double Fs = 44100.0;  // sampling frequency
+	private:
+		int sample_rate;
+		int sample_size;
+		int no_channels;
+		int no_samples;
+		vector<T> sample_data;
 
-    T a, b;
+		T a, b;
     public:
-    Audio(T first, T second)
-      {a=first; b=second;}
-    T getmax();
+		Audio();
+		Audio(int sr, int size, int chan, int no_samples, T* buffer);
+		Audio(T first, T second) {a=first; b=second;}
+		bool Load(string file_name);
+		bool Save(string file_name);
+
+		friend ostream& operator<<(ostream& lhs, const Audio<T>& rhs); // out stream 
+		friend ostream& operator>>(ifstream& lhs, Audio<T>& rhs); // in stream 
   };
 }
 

@@ -11,7 +11,7 @@
 using namespace std;
 
 
-static void show_usage(std::string name)
+static void show_usage(string name)
 {
   cerr << "Usage: " << name << " <options> <ops>" << endl
        << "options:" << endl
@@ -36,11 +36,7 @@ static void show_usage(std::string name)
 
 int main(int argc, char* argv[])
 {
-  if (argc < 9 || argc > 11) {
-
-    KNGEMI002::Audio <int> myobject (100, 75);
-    cout << myobject.getmax() << endl;
-
+  if (argc < 9 || argc > 12) {
     show_usage(argv[0]);
    return 1;
   }
@@ -48,19 +44,18 @@ int main(int argc, char* argv[])
 int sampleRate = 0;
 int sampleSize = 0;
 int numberChannels = 0;
-std::string OutputFileName;
-std::string InputFileName1;
-std::string InputFileName2;
+string OutputFileName;
 
-  if (argv[1] == "-r") { // get sample rate
+  if (string(argv[1]) == "-r") { // get sample rate
     sampleRate = stoi(argv[2]);
+	
   }
   else {
     cout << "Sample rate not defined" << endl;
     show_usage(argv[0]);
     return 1;
   }
-  if (argv[3] == "-b") { // get sample size
+  if (string(argv[3]) == "-b") { // get sample size
     sampleSize = stoi(argv[4]);
   }
   else {
@@ -68,7 +63,7 @@ std::string InputFileName2;
     show_usage(argv[0]);
     return 1;
   }
-  if (argv[5] == "-c") { // get number of channels
+  if (string(argv[5]) == "-c") { // get number of channels
     numberChannels = stoi(argv[6]);
   }
   else {
@@ -76,7 +71,7 @@ std::string InputFileName2;
     show_usage(argv[0]);
     return 1;
   }
-  if (argv[7] == "-o") { // get output file name
+  if (string(argv[7]) == "-o") { // get output file name
     OutputFileName = argv[8];
   }
   else {
@@ -85,48 +80,37 @@ std::string InputFileName2;
     return 1;
   }
 // Get <ops> parameters
-  if (argv[9] == "-add") { // get output file name
-	if(argv[11] != "") {
-		InputFileName2 = argv[11];
-	}
-	else{
-		cout << "Second input file not provided" << endl;
-		show_usage(argv[0]);
-		return 1;
-	}
+  string SoundFile1, SoundFIle2; 
+  if (string(argv[9]) == "-add") { // get output file name
+    SoundFile1 = argv[10];
+    SoundFIle2 = argv[11];
+    KNGEMI002::Audio <pair <int8_t, int8_t> > myobject;
+    myobject.Load("beez18sec_44100_signed_8bit_mono.raw");
+    cout << "Adding" << endl;
+
   }
-  else if (argv[9] == "-cut") {
+  else if (string(argv[9]) == "-cut") {
   }
-  else if (argv[9] == "-radd") {
+  else if (string(argv[9]) == "-radd") {
   }
-  else if (argv[9] == "-cat") {
+  else if (string(argv[9]) == "-cat") {
   }
-  else if (argv[9] == "-v") {
+  else if (string(argv[9]) == "-v") {
   }
-  else if (argv[9] == "-rev") {
+  else if (string(argv[9]) == "-rev") {
   }
-  else if (argv[9] == "-rms") {
+  else if (string(argv[9]) == "-rms") {
   }
-  else if (argv[9] == "-norm") {
+  else if (string(argv[9]) == "-norm") {
   }
-  else if (argv[9] == "-fadein") {
+  else if (string(argv[9]) == "-fadein") {
   }
-  else if (argv[9] == "-fadeout") {
+  else if (string(argv[9]) == "-fadeout") {
   }
   else {
     cout << "<ops> parameters not defined" << endl;
     show_usage(argv[0]);
     return 1;
   }
-  if(argv[10] != ""){
-	InputFileName1 = argv[10];
-  }
-  else{
-	cout << "Input file not given" << endl;
-	show_usage(argv[0]);
-    return 1;
-  }
-
   return 0;
 }
-
