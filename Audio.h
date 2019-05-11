@@ -27,6 +27,7 @@ namespace KNGEMI002 {
 		bool Load(string file_name);
 		bool Save(string file_name);
 
+		Audio operator|(const Audio& rhs);
 		friend ostream& operator<<(ostream& lhs, const Audio<T>& rhs); // out stream 
 		friend ostream& operator>>(ifstream& lhs, Audio<T>& rhs); // in stream 
   };

@@ -84,7 +84,7 @@ string OutputFileName;
   if (string(argv[9]) == "-add") { // get output file name
     SoundFile1 = argv[10];
     SoundFIle2 = argv[11];
-    KNGEMI002::Audio <pair <int8_t, int8_t> > myobject;
+    KNGEMI002::Audio <int8_t> myobject;
     myobject.Load("beez18sec_44100_signed_8bit_mono.raw");
     cout << "Adding" << endl;
 
