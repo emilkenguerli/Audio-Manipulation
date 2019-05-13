@@ -36,7 +36,7 @@ static void show_usage(string name)
 
 int main(int argc, char* argv[])
 {
-  if (argc < 9 || argc > 12) {
+  if (argc < 9 || argc > 14) {
     show_usage(argv[0]);
    return 1;
   }
@@ -82,22 +82,364 @@ string OutputFileName;
 // Get <ops> parameters
   string SoundFile1, SoundFIle2; 
   if (string(argv[9]) == "-add") { // get output file name
-    SoundFile1 = argv[10];
+	SoundFile1 = argv[10];
     SoundFIle2 = argv[11];
-    KNGEMI002::Audio <int8_t> myobject;
-    myobject.Load("beez18sec_44100_signed_8bit_mono.raw");
-    cout << "Adding" << endl;
-
+	if(numberChannels == 1){
+		if(sampleSize == 8){
+			KNGEMI002::Audio <int8_t> a1;
+			KNGEMI002::Audio <int8_t> a2;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			if (!a2.load(SoundFIle2)) {
+			  cerr << "Couldn't load " << SoundFIle2 << endl;
+			  return 0;
+			}
+			cout << "Adding" << endl;
+			KNGEMI002::Audio<int8_t> sum = a1+a2;
+			sum.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <int16_t> a1;
+			KNGEMI002::Audio <int16_t> a2;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			if (!a2.load(SoundFIle2)) {
+			  cerr << "Couldn't load " << SoundFIle2 << endl;
+			  return 0;
+			}
+			cout << "Adding" << endl;
+			KNGEMI002::Audio<int16_t> sum = a1+a2;
+			sum.save(OutputFileName);
+		}		
+	}
+	else{
+		if(sampleSize == 8){
+			KNGEMI002::Audio <pair<int8_t, int8_t> > a1;
+			KNGEMI002::Audio <pair<int8_t, int8_t> > a2;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			if (!a2.load(SoundFIle2)) {
+			  cerr << "Couldn't load " << SoundFIle2 << endl;
+			  return 0;
+			}
+			cout << "Adding" << endl;
+			KNGEMI002::Audio<pair<int8_t, int8_t> > sum = a1+a2;
+			sum.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <pair<int16_t, int16_t> > a1;
+			KNGEMI002::Audio <pair<int16_t, int16_t> > a2;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			if (!a2.load(SoundFIle2)) {
+			  cerr << "Couldn't load " << SoundFIle2 << endl;
+			  return 0;
+			}
+			cout << "Adding" << endl;
+			KNGEMI002::Audio<pair<int16_t, int16_t> > sum = a1+a2;
+			sum.save(OutputFileName);
+		}
+	}
+    
   }
   else if (string(argv[9]) == "-cut") {
+	int r1 = stoi(argv[10]);
+	int r2 = stoi(argv[11]);
+	pair<int, int> range = make_pair(r1,r2);
+	SoundFile1 = argv[12];
+	if(numberChannels == 1){
+		if(sampleSize == 8){
+			KNGEMI002::Audio <int8_t> a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			cout << "Cutting" << endl;
+			KNGEMI002::Audio<int8_t> cut = a1^range;
+			cut.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <int16_t> a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			cout << "Cutting" << endl;
+			KNGEMI002::Audio<int16_t> cut = a1^range;
+			cut.save(OutputFileName);
+		}		
+	}
+	else{
+		if(sampleSize == 8){
+			KNGEMI002::Audio <pair<int8_t, int8_t> > a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			cout << "Cutting" << endl;
+			KNGEMI002::Audio<pair<int8_t, int8_t> > cut = a1^range;
+			cut.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <pair<int16_t, int16_t> > a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			cout << "Cutting" << endl;
+			KNGEMI002::Audio<pair<int16_t, int16_t> > cut = a1^range;
+			cut.save(OutputFileName);
+		}
+	}
   }
   else if (string(argv[9]) == "-radd") {
+    int r1 = stoi(argv[10]);
+	int r2 = stoi(argv[11]);
+	pair<int, int> range = make_pair(r1,r2);
+	SoundFile1 = argv[12];
+    SoundFIle2 = argv[13];
+	if(numberChannels == 1){
+		if(sampleSize == 8){
+			KNGEMI002::Audio <int8_t> a1;
+			KNGEMI002::Audio <int8_t> a2;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			if (!a2.load(SoundFIle2)) {
+			  cerr << "Couldn't load " << SoundFIle2 << endl;
+			  return 0;
+			}
+			cout << "Adding over range " << argv[10] << " to " << argv[11] << endl;
+			KNGEMI002::Audio<int8_t> sum = a1.add_ranges(a2, range);
+			sum.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <int16_t> a1;
+			KNGEMI002::Audio <int16_t> a2;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			if (!a2.load(SoundFIle2)) {
+			  cerr << "Couldn't load " << SoundFIle2 << endl;
+			  return 0;
+			}
+			cout << "Adding over range " << argv[10] << " to " << argv[11] << endl;
+			KNGEMI002::Audio<int16_t> sum = a1.add_ranges(a2, range);
+			sum.save(OutputFileName);
+		}		
+	}
+	else{
+		if(sampleSize == 8){
+			KNGEMI002::Audio <pair<int8_t, int8_t> > a1;
+			KNGEMI002::Audio <pair<int8_t, int8_t> > a2;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			if (!a2.load(SoundFIle2)) {
+			  cerr << "Couldn't load " << SoundFIle2 << endl;
+			  return 0;
+			}
+			cout << "Adding over range " << argv[10] << " to " << argv[11] << endl;
+			KNGEMI002::Audio<pair<int8_t, int8_t> > sum = a1.add_ranges(a2, range);
+			sum.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <pair<int16_t, int16_t> > a1;
+			KNGEMI002::Audio <pair<int16_t, int16_t> > a2;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			if (!a2.load(SoundFIle2)) {
+			  cerr << "Couldn't load " << SoundFIle2 << endl;
+			  return 0;
+			}
+			cout << "Adding over range " << argv[10] << " to " << argv[11] << endl;
+			KNGEMI002::Audio<pair<int16_t, int16_t> > sum = a1.add_ranges(a2, range);
+			sum.save(OutputFileName);
+		}
+	}
   }
   else if (string(argv[9]) == "-cat") {
+	SoundFile1 = argv[10];
+    SoundFIle2 = argv[11];
+	if(numberChannels == 1){
+		if(sampleSize == 8){
+			KNGEMI002::Audio <int8_t> a1;
+			KNGEMI002::Audio <int8_t> a2;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			if (!a2.load(SoundFIle2)) {
+			  cerr << "Couldn't load " << SoundFIle2 << endl;
+			  return 0;
+			}
+			cout << "Concatenating" << endl;
+			KNGEMI002::Audio<int8_t> sum = a1|a2;
+			sum.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <int16_t> a1;
+			KNGEMI002::Audio <int16_t> a2;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			if (!a2.load(SoundFIle2)) {
+			  cerr << "Couldn't load " << SoundFIle2 << endl;
+			  return 0;
+			}
+			cout << "Concatenating" << endl;
+			KNGEMI002::Audio<int16_t> sum = a1|a2;
+			sum.save(OutputFileName);
+		}		
+	}
+	else{
+		if(sampleSize == 8){
+			KNGEMI002::Audio <pair<int8_t, int8_t> > a1;
+			KNGEMI002::Audio <pair<int8_t, int8_t> > a2;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			if (!a2.load(SoundFIle2)) {
+			  cerr << "Couldn't load " << SoundFIle2 << endl;
+			  return 0;
+			}
+			cout << "Concatenating" << endl;
+			KNGEMI002::Audio<pair<int8_t, int8_t> > sum = a1|a2;
+			sum.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <pair<int16_t, int16_t> > a1;
+			KNGEMI002::Audio <pair<int16_t, int16_t> > a2;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			if (!a2.load(SoundFIle2)) {
+			  cerr << "Couldn't load " << SoundFIle2 << endl;
+			  return 0;
+			}
+			cout << "Concatenating" << endl;
+			KNGEMI002::Audio<pair<int16_t, int16_t> > sum = a1|a2;
+			sum.save(OutputFileName);
+		}
+	}
   }
   else if (string(argv[9]) == "-v") {
+	float r1 = stod(argv[10]);
+	float r2 = stod(argv[11]);
+	pair<float, float> f = make_pair(r1,r2);
+	SoundFile1 = argv[12];
+	if(numberChannels == 1){
+		if(sampleSize == 8){
+			KNGEMI002::Audio <int8_t> a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			cout << "Factoring" << endl;
+			KNGEMI002::Audio<int8_t> factor = a1*f;
+			factor.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <int16_t> a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			cout << "Factoring" << endl;
+			KNGEMI002::Audio<int16_t> factor = a1*f;
+			factor.save(OutputFileName);
+		}		
+	}
+	else{
+		if(sampleSize == 8){
+			KNGEMI002::Audio <pair<int8_t, int8_t> > a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+
+			cout << "Factoring" << endl;
+			KNGEMI002::Audio<pair<int8_t, int8_t> > factor = a1*f;
+			factor.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <pair<int16_t, int16_t> > a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+
+			cout << "Factoring" << endl;
+			KNGEMI002::Audio<pair<int16_t, int16_t> > factor = a1*f;
+			factor.save(OutputFileName);
+		}
+	}
+
   }
   else if (string(argv[9]) == "-rev") {
+	SoundFile1 = argv[10];
+	if(numberChannels == 1){
+		if(sampleSize == 8){
+			KNGEMI002::Audio <int8_t> a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			cout << "Reversing" << endl;
+			KNGEMI002::Audio<int8_t> reversed = a1.reverse();
+			reversed.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <int16_t> a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			cout << "Reversing" << endl;
+			KNGEMI002::Audio<int16_t> reversed = a1.reverse();
+			reversed.save(OutputFileName);
+		}		
+	}
+	else{
+		if(sampleSize == 8){
+			KNGEMI002::Audio <pair<int8_t, int8_t> > a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+
+			cout << "Reversing" << endl;
+			KNGEMI002::Audio<pair<int8_t, int8_t> >  reversed = a1.reverse();
+			reversed.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <pair<int16_t, int16_t> > a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+
+			cout << "Reversing" << endl;
+			KNGEMI002::Audio<pair<int16_t, int16_t> > reversed = a1.reverse();
+			reversed.save(OutputFileName);
+		}
+	}
   }
   else if (string(argv[9]) == "-rms") {
   }

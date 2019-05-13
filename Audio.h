@@ -22,14 +22,45 @@ namespace KNGEMI002 {
 		T a, b;
     public:
 		Audio();
-		Audio(int sr, int size, int chan, int no_samples, T* buffer);
+		Audio(int sr, int size, int chan, int no_samples, vector<T> buffer);
 		Audio(T first, T second) {a=first; b=second;}
-		bool Load(string file_name);
-		bool Save(string file_name);
+		bool load(string file_name);
+		bool save(string file_name);
 
+		Audio operator+(const Audio& rhs);
 		Audio operator|(const Audio& rhs);
-		friend ostream& operator<<(ostream& lhs, const Audio<T>& rhs); // out stream 
-		friend ostream& operator>>(ifstream& lhs, Audio<T>& rhs); // in stream 
+		Audio operator*(pair<float,float> rhs);
+		Audio operator^(pair<int,int> rhs);
+		Audio add_ranges(Audio& rhs, pair<int,int> p);
+		Audio reverse();
+		//friend ostream& operator<<(ostream& lhs, const Audio<T>& rhs); // out stream 
+		//friend ostream& operator>>(ifstream& lhs, Audio<T>& rhs); // in stream 
+  };
+
+  template <class T> class Audio<pair<T,T> >{
+		private:
+		int sample_rate;
+		int sample_size;
+		int no_channels;
+		int no_samples;
+		vector<pair<T,T> > sample_data;
+
+		T a, b;
+    public:
+		Audio();
+		Audio(int sr, int size, int chan, int no_samples, vector<pair<T,T> > buffer);
+		Audio(T first, T second) {a=first; b=second;}
+		bool load(string file_name);
+		bool save(string file_name);
+
+		Audio operator+(const Audio& rhs);
+		Audio operator|(const Audio& rhs);
+		Audio operator*(pair<float,float> rhs);
+		Audio operator^(pair<int,int> rhs);
+		Audio add_ranges(Audio& rhs, pair<int,int> p);
+		Audio reverse();
+
+
   };
 }
 
