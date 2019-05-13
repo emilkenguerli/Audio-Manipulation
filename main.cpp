@@ -402,7 +402,7 @@ string OutputFileName;
 			  return 0;
 			}
 			cout << "Reversing" << endl;
-			KNGEMI002::Audio<int8_t> reversed = a1.reverse();
+			KNGEMI002::Audio<int8_t> reversed = a1.rev();
 			reversed.save(OutputFileName);
 		}
 		else{
@@ -412,7 +412,7 @@ string OutputFileName;
 			  return 0;
 			}
 			cout << "Reversing" << endl;
-			KNGEMI002::Audio<int16_t> reversed = a1.reverse();
+			KNGEMI002::Audio<int16_t> reversed = a1.rev();
 			reversed.save(OutputFileName);
 		}		
 	}
@@ -425,7 +425,7 @@ string OutputFileName;
 			}
 
 			cout << "Reversing" << endl;
-			KNGEMI002::Audio<pair<int8_t, int8_t> >  reversed = a1.reverse();
+			KNGEMI002::Audio<pair<int8_t, int8_t> >  reversed = a1.rev();
 			reversed.save(OutputFileName);
 		}
 		else{
@@ -436,12 +436,59 @@ string OutputFileName;
 			}
 
 			cout << "Reversing" << endl;
-			KNGEMI002::Audio<pair<int16_t, int16_t> > reversed = a1.reverse();
+			KNGEMI002::Audio<pair<int16_t, int16_t> > reversed = a1.rev();
 			reversed.save(OutputFileName);
 		}
 	}
   }
   else if (string(argv[9]) == "-rms") {
+	SoundFile1 = argv[10];
+	if(numberChannels == 1){
+		if(sampleSize == 8){
+			KNGEMI002::Audio <int8_t> a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			cout << "Calculating RMS" << endl;
+			double RMS = a1.rms();
+			cout << "RMS is " << RMS << endl;
+		}
+		else{
+			KNGEMI002::Audio <int16_t> a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			cout << "Calculating RMS" << endl;
+			double RMS = a1.rms();
+			cout << "RMS is " << RMS << endl;
+		}		
+	}
+	else{
+		if(sampleSize == 8){
+			KNGEMI002::Audio <pair<int8_t, int8_t> > a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+
+			cout << "Calculating RMS" << endl;
+			pair<double,double> RMS = a1.rms();
+			cout << "RMS is for left channel is " << RMS.first << " and for RMS for the right channel is " << RMS.second << endl;
+		}
+		else{
+			KNGEMI002::Audio <pair<int16_t, int16_t> > a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+
+			cout << "Calculating RMS" << endl;
+			pair<double,double> RMS = a1.rms();
+			cout << "RMS for the left channel is " << RMS.first << " and RMS for the right channel is " << RMS.second << endl;
+		}
+	}
   }
   else if (string(argv[9]) == "-norm") {
   }

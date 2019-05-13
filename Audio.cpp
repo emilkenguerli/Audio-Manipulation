@@ -5,6 +5,8 @@
 #include <vector>
 #include <type_traits>
 #include <algorithm>
+#include <math.h>
+#include <numeric> 
 #include "Audio.h"
 
 namespace KNGEMI002 {
@@ -44,6 +46,127 @@ template<class T> Audio<pair<T,T> >::Audio(int sr, int size, int chan, int sampl
     sample_data.swap(buffer);
 
 }
+
+//Destructor
+
+template<class T> Audio<T>::~Audio(){
+	  
+	sample_rate = sample_size = no_channels = no_samples = 0;
+	sample_data.clear();
+}
+
+template<class T> Audio<pair<T,T> >::~Audio(){
+
+    sample_rate = sample_size = no_channels = no_samples = 0;
+	sample_data.clear();
+}
+
+//Copy constructor
+
+template<class T> Audio<T>::Audio(const Audio<T>& orig_audio){
+
+	sample_rate = orig_audio.sample_rate;
+    sample_size = orig_audio.sample_size;
+    no_channels = orig_audio.no_channels;
+    no_samples = orig_audio.no_samples;
+    sample_data = orig_audio.sample_data;
+
+}
+
+template<class T> Audio<pair<T,T> >::Audio(const Audio<pair<T,T> >& orig_audio){
+
+	sample_rate = orig_audio.sample_rate;
+    sample_size = orig_audio.sample_size;
+    no_channels = orig_audio.no_channels;
+    no_samples = orig_audio.no_samples;
+    sample_data = orig_audio.sample_data;
+
+}
+/*
+//Move constructor
+
+template<class T> Audio<T>::Audio(const Audio<T>& orig_audio){
+
+	sample_rate = orig_audio.sample_rate;
+    sample_size = orig_audio.sample_size;
+    no_channels = orig_audio.no_channels;
+    no_samples = orig_audio.no_samples;
+    sample_data.swap(orig_audio.sample_data);
+
+	orig_audio.sample_rate = orig_audio.sample_size = orig_audio.no_channels = orig_audio.no_samples = 0;
+	orig_audio.sample_data.clear();
+
+
+
+template<class T> Audio<pair<T,T> >::Audio(const Audio<pair<T,T> >& orig_audio){
+
+	sample_rate = orig_audio.sample_rate;
+    sample_size = orig_audio.sample_size;
+    no_channels = orig_audio.no_channels;
+    no_samples = orig_audio.no_samples;
+    sample_data.swap(orig_audio.sample_data);
+
+	orig_audio.sample_rate = orig_audio.sample_size = orig_audio.no_channels = orig_audio.no_samples = 0;
+	orig_audio.sample_data.clear();
+}
+}*/
+//Assignment operator
+
+template <class T> Audio<T>& Audio<T>::operator=(const Audio<T>& orig_audio){
+
+	sample_rate = orig_audio.sample_rate;
+    sample_size = orig_audio.sample_size;
+    no_channels = orig_audio.no_channels;
+    no_samples = orig_audio.no_samples;
+    sample_data.swap(orig_audio.sample_data);
+
+	return *this;
+
+}
+
+template <class T> Audio<pair<T,T> >& Audio<pair<T,T> >::operator=(const Audio<pair<T,T> >& orig_audio){
+
+	sample_rate = orig_audio.sample_rate;
+    sample_size = orig_audio.sample_size;
+    no_channels = orig_audio.no_channels;
+    no_samples = orig_audio.no_samples;
+    sample_data.swap(orig_audio.sample_data);
+
+	return *this;
+}
+
+//Move assignment operator
+
+template <class T> Audio<T>& Audio<T>::operator=(Audio<T>&& orig_audio){
+
+	sample_rate = orig_audio.sample_rate;
+    sample_size = orig_audio.sample_size;
+    no_channels = orig_audio.no_channels;
+    no_samples = orig_audio.no_samples;
+    sample_data.swap(orig_audio.sample_data);
+
+	orig_audio.sample_rate = orig_audio.sample_size = orig_audio.no_channels = orig_audio.no_samples = 0;
+	orig_audio.sample_data.clear();
+
+	return *this;
+
+}
+
+template <class T> Audio<pair<T,T> >& Audio<pair<T,T> >::operator=(Audio<pair<T,T> >&& orig_audio){
+
+	sample_rate = orig_audio.sample_rate;
+    sample_size = orig_audio.sample_size;
+    no_channels = orig_audio.no_channels;
+    no_samples = orig_audio.no_samples;
+    sample_data.swap(orig_audio.sample_data);
+
+	orig_audio.sample_rate = orig_audio.sample_size = orig_audio.no_channels = orig_audio.no_samples = 0;
+	orig_audio.sample_data.clear();
+
+	return *this;
+}
+
+//Loading from file
 
 template <class T> bool Audio<T>::load(string file_name) 
 {
@@ -130,7 +253,7 @@ template <class T> bool Audio<pair<T,T> >::load(string file_name)
   return true;
 }
 
-//Saves 
+//Saving file
 
 template <class T> bool Audio<T>::save(string file_name) {
 
@@ -344,15 +467,43 @@ template <class T> Audio<pair<T,T> > Audio<pair<T,T> >::add_ranges(Audio<pair<T,
 
 //Reverse
 
-template <class T> Audio<T> Audio<T>::reverse(){
-  
-  return *this;
+template <class T> Audio<T> Audio<T>::rev(){
+
+  Audio<T> temp(*this); //copy constructor called
+  reverse(temp.sample_data.begin(), temp.sample_data.end());
+  return temp;
 
 }
 
-template <class T> Audio<pair<T,T> > Audio<pair<T,T> >::reverse() {
+template <class T> Audio<pair<T,T> > Audio<pair<T,T> >::rev() {
 
+  reverse(sample_data.begin(), sample_data.end());
   return *this;
+}
+
+//RMS calculation
+
+template <class T> double Audio<T>::rms(){
+  
+  double rms = 0;
+  double sumsquares = accumulate(sample_data.begin(), sample_data.end(), 0.0, [](double sum, double value){return sum + value*value;});
+  rms = sqrt(sumsquares/no_samples);
+
+  return rms;
+
+}
+
+template <class T> pair<double,double> Audio<pair<T,T> >::rms() {
+
+  double rms = 0;
+  double sumsquares1 = accumulate(sample_data.begin(), sample_data.end(), 0.0, [](double sum, pair<T,T> value){return sum + ((double)value.first);});
+  double sumsquares2 = accumulate(sample_data.begin(), sample_data.end(), 0.0, [](double sum, pair<T,T> value){return sum + ((double)value.second);});
+
+  double rms1 = sqrt(sumsquares1/no_samples/2);
+  double rms2 = sqrt(sumsquares2/no_samples/2);
+  pair<double,double> rms_samples = make_pair(rms1, rms2);
+
+  return rms_samples;
 }
 
 /*

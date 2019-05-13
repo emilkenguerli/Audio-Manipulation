@@ -24,6 +24,12 @@ namespace KNGEMI002 {
 		Audio();
 		Audio(int sr, int size, int chan, int no_samples, vector<T> buffer);
 		Audio(T first, T second) {a=first; b=second;}
+		~Audio();
+		Audio(const Audio& orig_audio); // Copy constructor
+		//Audio(Audio&& orig_audio); // Move constructor
+		Audio& operator=(const Audio& orig_audio); // Assignment operator
+		Audio& operator=(Audio&& orig_audio); // Move assignment operator
+
 		bool load(string file_name);
 		bool save(string file_name);
 
@@ -32,7 +38,8 @@ namespace KNGEMI002 {
 		Audio operator*(pair<float,float> rhs);
 		Audio operator^(pair<int,int> rhs);
 		Audio add_ranges(Audio& rhs, pair<int,int> p);
-		Audio reverse();
+		Audio rev();
+		double rms();
 		//friend ostream& operator<<(ostream& lhs, const Audio<T>& rhs); // out stream 
 		//friend ostream& operator>>(ifstream& lhs, Audio<T>& rhs); // in stream 
   };
@@ -50,6 +57,12 @@ namespace KNGEMI002 {
 		Audio();
 		Audio(int sr, int size, int chan, int no_samples, vector<pair<T,T> > buffer);
 		Audio(T first, T second) {a=first; b=second;}
+		~Audio();
+		Audio(const Audio& orig_audio); // Copy constructor
+		//Audio(Audio&& orig_audio); // Move constructor
+		Audio& operator=(const Audio& orig_audio); // Assignment operator
+		Audio& operator=(Audio&& orig_audio); // Move assignment operator
+
 		bool load(string file_name);
 		bool save(string file_name);
 
@@ -58,7 +71,8 @@ namespace KNGEMI002 {
 		Audio operator*(pair<float,float> rhs);
 		Audio operator^(pair<int,int> rhs);
 		Audio add_ranges(Audio& rhs, pair<int,int> p);
-		Audio reverse();
+		Audio rev();
+		pair<double,double> rms();
 
 
   };
