@@ -4,6 +4,7 @@
 
 #include <iterator>
 #include <memory>
+#include <vector>
 #include <stdint.h>
 #include <math.h>
 
@@ -21,7 +22,6 @@ namespace KNGEMI002 {
 
 		T a, b;
     public:
-		//template <class U> friend class Normalise;
 		Audio();
 		Audio(int sr, int size, int chan, int no_samples, vector<T> buffer);
 		Audio(T first, T second) {a=first; b=second;}
@@ -64,7 +64,6 @@ namespace KNGEMI002 {
 
 		T a, b;
     public:
-		//template <class U> friend class Normalise;
 		Audio();
 		Audio(int sr, int size, int chan, int no_samples, vector<pair<T,T> > buffer);
 		Audio(T first, T second) {a=first; b=second;}

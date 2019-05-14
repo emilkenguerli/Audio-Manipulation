@@ -141,8 +141,7 @@ template <class T> Audio<pair<T,T> >& Audio<pair<T,T> >::operator=(Audio<pair<T,
 
 //Loading from file
 
-template <class T> bool Audio<T>::load(string file_name) 
-{
+template <class T> bool Audio<T>::load(string file_name) {
   stringstream ss(file_name);
   vector<string> result;
   while(ss.good()) {
@@ -183,8 +182,7 @@ template <class T> bool Audio<T>::load(string file_name)
   return true;
 }
 
-template <class T> bool Audio<pair<T,T> >::load(string file_name) 
-{
+template <class T> bool Audio<pair<T,T> >::load(string file_name) {
  stringstream ss(file_name);
   vector<string> result;
   while(ss.good()) {
@@ -272,8 +270,7 @@ template <class T> bool Audio<pair<T,T> >::save(string file_name) {
 
 //Adding files
 
-template <class T> Audio<T> Audio<T>::operator+(const Audio<T>& rhs) 
-{
+template <class T> Audio<T> Audio<T>::operator+(const Audio<T>& rhs){
   if(no_channels != rhs.no_channels || sample_size != rhs.sample_size || sample_rate != rhs.sample_rate){
   	  cerr << "The sampling, sampling size or mono/stereo settings didn't match" << endl;
 	  return *this;
@@ -295,8 +292,7 @@ template <class T> Audio<T> Audio<T>::operator+(const Audio<T>& rhs)
   return *this;
 }
 
-template <class T > Audio<pair<T,T> > Audio<pair<T,T> >::operator+(const Audio<pair<T,T> >& rhs) 
-{
+template <class T > Audio<pair<T,T> > Audio<pair<T,T> >::operator+(const Audio<pair<T,T> >& rhs){
   if(no_channels != rhs.no_channels || sample_size != rhs.sample_size || sample_rate != rhs.sample_rate){
   	  cerr << "The sampling, sampling size or mono/stereo settings didn't match" << endl;
 	  return *this;
@@ -359,8 +355,7 @@ template <class T> Audio<pair<T,T> > Audio<pair<T,T> >::operator|(const Audio<pa
 //Volume factor
 
 template <class T> Audio<T> Audio<T>::operator*(pair<float,float> rhs){
-  //float f = rhs.first;
-  
+
   vector<T> buffer(no_samples);
   transform(sample_data.begin(), sample_data.end(), buffer.begin(), [rhs](T value){return (T)(value*rhs.first);});
   Audio<T> temp(sample_rate, sample_size, no_channels, buffer.size(), buffer);
@@ -381,9 +376,8 @@ template <class T> Audio<pair<T,T> > Audio<pair<T,T> >::operator*(pair<float,flo
 
 //Cut
 
-template <class T> Audio<T> Audio<T>::operator^(pair<int,int> rhs) 
-{
-  cout << "Hello" << endl;
+template <class T> Audio<T> Audio<T>::operator^(pair<int,int> rhs){
+
   vector<T> buffer(rhs.first);
   copy(sample_data.begin(), sample_data.begin() + rhs.first, buffer.begin());
   copy(sample_data.begin() + rhs.second, sample_data.end(), back_inserter(buffer));
@@ -394,8 +388,7 @@ template <class T> Audio<T> Audio<T>::operator^(pair<int,int> rhs)
   return temp;
 }
 
-template <class T > Audio<pair<T,T> > Audio<pair<T,T> >::operator^(pair<int,int> rhs) 
-{
+template <class T > Audio<pair<T,T> > Audio<pair<T,T> >::operator^(pair<int,int> rhs) {
   vector<pair<T,T> > buffer(rhs.first);
   copy(sample_data.begin() , sample_data.begin() + rhs.first, buffer.begin());
   copy(sample_data.begin() + rhs.second, sample_data.end(), back_inserter(buffer));    
@@ -497,7 +490,7 @@ template <class T> Audio<T> Audio<T>::norm(pair<double, double> p){
 }
 
 template <class T> Audio<pair<T,T> > Audio<pair<T,T> >::norm(pair<double, double> p){
-  //pair<double, double> c_rms= make_pair(p.first, p.second);
+
   pair<double, double> d_rms = this -> rms();
   vector<pair<T,T> > buffer(no_samples);
 

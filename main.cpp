@@ -242,6 +242,7 @@ string OutputFileName;
 			  cerr << "Couldn't load " << SoundFIle2 << endl;
 			  return 0;
 			}
+			cout << "Cutting subranges" << endl;
 			a1.cut_range(range1);
 			a2.cut_range(range2);
 			KNGEMI002::Audio <int16_t> sum = a1 + a2;
@@ -260,6 +261,7 @@ string OutputFileName;
 			  cerr << "Couldn't load " << SoundFIle2 << endl;
 			  return 0;
 			}
+			cout << "Cutting subranges" << endl;
 			a1.cut_range(range1);
 			a2.cut_range(range2);
 			KNGEMI002::Audio <pair<int8_t, int8_t> > sum = a1 + a2;
@@ -276,6 +278,7 @@ string OutputFileName;
 			  cerr << "Couldn't load " << SoundFIle2 << endl;
 			  return 0;
 			}
+			cout << "Cutting subranges" << endl;
 			a1.cut_range(range1);
 			a2.cut_range(range2);
 			KNGEMI002::Audio <pair<int16_t, int16_t> > sum = a1 + a2;
