@@ -36,7 +36,7 @@ static void show_usage(string name)
 
 int main(int argc, char* argv[])
 {
-  if (argc < 9 || argc > 14) {
+  if (argc < 9 || argc > 16) {
     show_usage(argv[0]);
    return 1;
   }
@@ -203,9 +203,16 @@ string OutputFileName;
   else if (string(argv[9]) == "-radd") {
     int r1 = stoi(argv[10]);
 	int r2 = stoi(argv[11]);
-	pair<int, int> range = make_pair(r1,r2);
-	SoundFile1 = argv[12];
-    SoundFIle2 = argv[13];
+	pair<int, int> range1 = make_pair(r1,r2);
+    int s1 = stoi(argv[12]);
+	int s2 = stoi(argv[13]);
+	pair<int, int> range2 = make_pair(s1,s2);
+        if ((range1.second - range1.first) != (range2.second - range2.first)) {
+		cerr << "Range lengths are not equal in size" << endl;
+		return 1;
+	}
+	SoundFile1 = argv[14];
+    SoundFIle2 = argv[15];
 	if(numberChannels == 1){
 		if(sampleSize == 8){
 			KNGEMI002::Audio <int8_t> a1;
@@ -218,8 +225,10 @@ string OutputFileName;
 			  cerr << "Couldn't load " << SoundFIle2 << endl;
 			  return 0;
 			}
-			cout << "Adding over range " << argv[10] << " to " << argv[11] << endl;
-			KNGEMI002::Audio<int8_t> sum = a1.add_ranges(a2, range);
+			cout << "Cutting subranges" << endl;
+			a1.cut_range(range1);
+			a2.cut_range(range2);
+			KNGEMI002::Audio <int8_t> sum = a1 + a2;
 			sum.save(OutputFileName);
 		}
 		else{
@@ -233,12 +242,13 @@ string OutputFileName;
 			  cerr << "Couldn't load " << SoundFIle2 << endl;
 			  return 0;
 			}
-			cout << "Adding over range " << argv[10] << " to " << argv[11] << endl;
-			KNGEMI002::Audio<int16_t> sum = a1.add_ranges(a2, range);
+			a1.cut_range(range1);
+			a2.cut_range(range2);
+			KNGEMI002::Audio <int16_t> sum = a1 + a2;
 			sum.save(OutputFileName);
 		}		
 	}
-	else{
+	else {
 		if(sampleSize == 8){
 			KNGEMI002::Audio <pair<int8_t, int8_t> > a1;
 			KNGEMI002::Audio <pair<int8_t, int8_t> > a2;
@@ -250,8 +260,9 @@ string OutputFileName;
 			  cerr << "Couldn't load " << SoundFIle2 << endl;
 			  return 0;
 			}
-			cout << "Adding over range " << argv[10] << " to " << argv[11] << endl;
-			KNGEMI002::Audio<pair<int8_t, int8_t> > sum = a1.add_ranges(a2, range);
+			a1.cut_range(range1);
+			a2.cut_range(range2);
+			KNGEMI002::Audio <pair<int8_t, int8_t> > sum = a1 + a2;
 			sum.save(OutputFileName);
 		}
 		else{
@@ -265,8 +276,9 @@ string OutputFileName;
 			  cerr << "Couldn't load " << SoundFIle2 << endl;
 			  return 0;
 			}
-			cout << "Adding over range " << argv[10] << " to " << argv[11] << endl;
-			KNGEMI002::Audio<pair<int16_t, int16_t> > sum = a1.add_ranges(a2, range);
+			a1.cut_range(range1);
+			a2.cut_range(range2);
+			KNGEMI002::Audio <pair<int16_t, int16_t> > sum = a1 + a2;
 			sum.save(OutputFileName);
 		}
 	}
@@ -491,6 +503,56 @@ string OutputFileName;
 	}
   }
   else if (string(argv[9]) == "-norm") {
+	double r1 = stod(argv[10]);
+	double r2 = stod(argv[11]);
+	pair<double, double> f = make_pair(r1,r2);
+	SoundFile1 = argv[12];
+	if(numberChannels == 1){
+		if(sampleSize == 8){
+			KNGEMI002::Audio <int8_t> a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			cout << "Normalizing" << endl;
+			KNGEMI002::Audio<int8_t> normal = a1.norm(f);
+			normal.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <int16_t> a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+			cout << "Normalizing" << endl;
+			KNGEMI002::Audio<int16_t> normal = a1.norm(f);
+			normal.save(OutputFileName);
+		}		
+	}
+	else{
+		if(sampleSize == 8){
+			KNGEMI002::Audio <pair<int8_t, int8_t> > a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+
+			cout << "Normalizing" << endl;
+			KNGEMI002::Audio<pair<int8_t, int8_t> > normal = a1.norm(f);
+			normal.save(OutputFileName);
+		}
+		else{
+			KNGEMI002::Audio <pair<int16_t, int16_t> > a1;
+			if (!a1.load(SoundFile1)) {
+			  cerr << "Couldn't load " << SoundFile1 << endl;
+			  return 0;
+			}
+
+			cout << "Normalizing" << endl;
+			KNGEMI002::Audio<pair<int16_t, int16_t> > normal = a1.norm(f);
+			normal.save(OutputFileName);
+		}
+	}
   }
   else if (string(argv[9]) == "-fadein") {
   }

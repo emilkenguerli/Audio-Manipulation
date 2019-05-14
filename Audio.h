@@ -21,12 +21,12 @@ namespace KNGEMI002 {
 
 		T a, b;
     public:
+		//template <class U> friend class Normalise;
 		Audio();
 		Audio(int sr, int size, int chan, int no_samples, vector<T> buffer);
 		Audio(T first, T second) {a=first; b=second;}
 		~Audio();
 		Audio(const Audio& orig_audio); // Copy constructor
-		//Audio(Audio&& orig_audio); // Move constructor
 		Audio& operator=(const Audio& orig_audio); // Assignment operator
 		Audio& operator=(Audio&& orig_audio); // Move assignment operator
 
@@ -37,11 +37,21 @@ namespace KNGEMI002 {
 		Audio operator|(const Audio& rhs);
 		Audio operator*(pair<float,float> rhs);
 		Audio operator^(pair<int,int> rhs);
-		Audio add_ranges(Audio& rhs, pair<int,int> p);
+		bool cut_range(pair<int,int> r);
 		Audio rev();
 		double rms();
-		//friend ostream& operator<<(ostream& lhs, const Audio<T>& rhs); // out stream 
-		//friend ostream& operator>>(ifstream& lhs, Audio<T>& rhs); // in stream 
+		Audio norm(pair<double, double> p);
+
+  };
+
+  template <class T> class Normalise {
+	public:
+		Normalise(double rms1, double rms2) : desired_rms(rms1), current_rms(rms2){}
+		T operator()(T rhs);
+
+	private:
+		double desired_rms;
+		double current_rms;
   };
 
   template <class T> class Audio<pair<T,T> >{
@@ -54,12 +64,12 @@ namespace KNGEMI002 {
 
 		T a, b;
     public:
+		//template <class U> friend class Normalise;
 		Audio();
 		Audio(int sr, int size, int chan, int no_samples, vector<pair<T,T> > buffer);
 		Audio(T first, T second) {a=first; b=second;}
 		~Audio();
 		Audio(const Audio& orig_audio); // Copy constructor
-		//Audio(Audio&& orig_audio); // Move constructor
 		Audio& operator=(const Audio& orig_audio); // Assignment operator
 		Audio& operator=(Audio&& orig_audio); // Move assignment operator
 
@@ -70,11 +80,22 @@ namespace KNGEMI002 {
 		Audio operator|(const Audio& rhs);
 		Audio operator*(pair<float,float> rhs);
 		Audio operator^(pair<int,int> rhs);
-		Audio add_ranges(Audio& rhs, pair<int,int> p);
+		bool cut_range(pair<int,int> r);
 		Audio rev();
 		pair<double,double> rms();
+		Audio norm(pair<double, double> p);
 
 
+  };
+
+  template <class T> class Normalise<pair<T,T> > {
+	public:
+		Normalise(pair<double, double> rms1, pair<double, double> rms2) : desired_rms(rms1), current_rms(rms2){}
+		pair<T,T> operator()(pair<T,T> rhs);
+
+	private:
+		pair<double, double> desired_rms;
+		pair<double, double> current_rms;
   };
 }
 

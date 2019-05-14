@@ -82,34 +82,7 @@ template<class T> Audio<pair<T,T> >::Audio(const Audio<pair<T,T> >& orig_audio){
     sample_data = orig_audio.sample_data;
 
 }
-/*
-//Move constructor
 
-template<class T> Audio<T>::Audio(const Audio<T>& orig_audio){
-
-	sample_rate = orig_audio.sample_rate;
-    sample_size = orig_audio.sample_size;
-    no_channels = orig_audio.no_channels;
-    no_samples = orig_audio.no_samples;
-    sample_data.swap(orig_audio.sample_data);
-
-	orig_audio.sample_rate = orig_audio.sample_size = orig_audio.no_channels = orig_audio.no_samples = 0;
-	orig_audio.sample_data.clear();
-
-
-
-template<class T> Audio<pair<T,T> >::Audio(const Audio<pair<T,T> >& orig_audio){
-
-	sample_rate = orig_audio.sample_rate;
-    sample_size = orig_audio.sample_size;
-    no_channels = orig_audio.no_channels;
-    no_samples = orig_audio.no_samples;
-    sample_data.swap(orig_audio.sample_data);
-
-	orig_audio.sample_rate = orig_audio.sample_size = orig_audio.no_channels = orig_audio.no_samples = 0;
-	orig_audio.sample_data.clear();
-}
-}*/
 //Assignment operator
 
 template <class T> Audio<T>& Audio<T>::operator=(const Audio<T>& orig_audio){
@@ -433,37 +406,39 @@ template <class T > Audio<pair<T,T> > Audio<pair<T,T> >::operator^(pair<int,int>
 
 //Add over subrange
 
-template <class T> Audio<T> Audio<T>::add_ranges(Audio<T>& A, pair<int,int> p){
-  int lowerbound = p.first*sample_rate;
-  int upperbound = p.second*sample_rate;
-  vector<T> buffer(p.first);
-  cout << sample_data.size() << " " << lowerbound << " " << upperbound << endl;
-  cout << "A " << A.sample_data.size() << endl;
-  copy(sample_data.begin() + lowerbound, sample_data.begin() + upperbound, buffer.begin());
-  //copy(A.sample_data.begin()+p.first, A.sample_data.begin() + p.second+1, buffer.begin()+p.first);
+template <class T> bool Audio<T>::cut_range(pair<int,int> r) {
+  int lowerbound = r.first*sample_rate;
+  int upperbound = r.second*sample_rate;
 
-  vector<T> buffer2(p.first);
-  copy(A.sample_data.begin() + lowerbound, A.sample_data.begin() + upperbound, buffer2.begin());
+  vector<T> buffer(sample_data.begin() + lowerbound, sample_data.begin() + upperbound);
 
-  if(buffer.size() != buffer2.size()){
-  	  cout << "The ranges aren't of equal length" << endl;
-	  return *this;
+  no_samples = buffer.size();
+  sample_data.clear();
+  sample_data.resize(no_samples);
+  for(auto i = 0; i < no_samples; i++) {
+    sample_data[i] = buffer[i];
   }
-  cout << "Yo" << endl;
-  Audio<T> temp1(sample_rate, sample_size, no_channels, buffer.size(), buffer);
-  Audio<T> temp2(sample_rate, sample_size, no_channels, buffer2.size(), buffer2);
-  Audio<T> sum = temp1 + temp2;
-        
-  //Audio<T> temp(sample_rate, sample_size, no_channels, buffer.size(), buffer);
-  //temp = *this + temp;
-  return sum;
-
+  return true;
 }
 
-template <class T> Audio<pair<T,T> > Audio<pair<T,T> >::add_ranges(Audio<pair<T,T> >& A, pair<int,int> p) {
+template <class T> bool Audio<pair<T,T> >::cut_range(pair<int,int> r) {
+  int lowerbound = r.first*sample_rate;
+  int upperbound = r.second*sample_rate;
 
-  return *this;
+  vector<pair<T,T> > buffer(sample_data.begin() + lowerbound, sample_data.begin() + upperbound);
+
+  no_samples = buffer.size();
+
+  sample_data.clear();
+  sample_data.resize(no_samples);
+  for(auto i = 0; i < no_samples; i++) {
+    sample_data[i].first = buffer[i].first;
+    sample_data[i].second = buffer[i].second;
+  }
+
+  return true;
 }
+
 
 //Reverse
 
@@ -506,16 +481,61 @@ template <class T> pair<double,double> Audio<pair<T,T> >::rms() {
   return rms_samples;
 }
 
-/*
-// Implement I/O operators for Audio: <<
-template <class T> ostream& operator<<(ostream& lhs, const Audio<T>& rhs) 
-{
+//Normalizing
+
+template <class T> Audio<T> Audio<T>::norm(pair<double, double> p){
+  double c_rms= p.first;
+  double d_rms = this -> rms();
+  vector<T> buffer(no_samples);
+
+  Normalise<T> funct(c_rms, d_rms);
+  transform(sample_data.begin(), sample_data.end(), buffer.begin(), funct);
+  Audio<T> temp(sample_rate, sample_size, no_channels, buffer.size(), buffer);
+
+  return temp;
 
 }
 
-//Implement I/O operators for Audio: >>
-template <class T> ostream& operator>>(ifstream& lhs, Audio<T>& rhs)
-{
-} */
+template <class T> Audio<pair<T,T> > Audio<pair<T,T> >::norm(pair<double, double> p){
+  //pair<double, double> c_rms= make_pair(p.first, p.second);
+  pair<double, double> d_rms = this -> rms();
+  vector<pair<T,T> > buffer(no_samples);
+
+  Normalise<pair<T,T> > funct(p, d_rms);
+  transform(sample_data.begin(), sample_data.end(), buffer.begin(), funct);
+  Audio<pair<T,T> > temp(sample_rate, sample_size, no_channels, buffer.size(), buffer);
+
+  return temp;
+}
+
+template <class T> T Normalise<T>::operator()(T rhs){
+
+  T value = (rhs * desired_rms)/current_rms;
+  int max = (8* sizeof(T) == 8) ? INT8_MAX : INT16_MAX;
+  if (value > max) value = max;
+  if (value < -max) value = -max;
+
+  return value;
+
+} 
+
+template <class T> pair<T,T> Normalise<pair<T,T> >::operator()(pair<T,T> rhs){
+
+  double value1 = (rhs.first * desired_rms.first)/current_rms.first;
+  int max = (8* sizeof(T) == 8) ? INT8_MAX : INT16_MAX;
+  if (value1 > max) value1 = max;
+  if (value1 < -max) value1 = -max;
+
+  double value2 = (rhs.second * desired_rms.second)/current_rms.second;
+  if (value2 > max) value2 = max;
+  if (value2 < -max) value2 = -max;
+
+  pair<T,T> combined = make_pair((T)value1, (T)value2);
+
+  return combined;
+
+} 
+
+
 
 }
