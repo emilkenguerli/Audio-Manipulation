@@ -27,7 +27,7 @@ namespace KNGEMI002 {
 		Audio(T first, T second) {a=first; b=second;}
 		~Audio();
 		Audio(const Audio& orig_audio); // Copy constructor
-		Audio& operator=(const Audio& orig_audio); // Assignment operator
+		Audio& operator=(const Audio& orig_audio); // Copy assignment operator
 		Audio& operator=(Audio&& orig_audio); // Move assignment operator
 
 		bool load(string file_name);
